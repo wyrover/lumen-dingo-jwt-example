@@ -21,7 +21,7 @@ composer require dingo/api:2.0.0-alpha2@dev
 composer update
 ```
 
-bootstrap/app.php 添加
+`bootstrap/app.php` 添加
 
 ``` php
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);

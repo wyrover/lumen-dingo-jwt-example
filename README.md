@@ -3,7 +3,7 @@
 test
 
 
-## 1. 生成工程
+## 1. 鐢熸垚宸ョ▼
 
 ```
 composer global require "laravel/lumen-installer"
@@ -13,3 +13,27 @@ php -S localhost:8000 -t public
 ```
 
 http://localhost:8000
+
+
+瀹夎 dingo
+```
+composer require dingo/api:2.0.0-alpha2@dev
+composer update
+```
+
+bootstrap/app.php 娣诲姞
+
+``` php
+$app->register(Dingo\Api\Provider\LumenServiceProvider::class);
+```
+
+
+.env 娣诲姞
+```
+API_STANDARDS_TREE=vnd
+API_PREFIX=api
+API_STRICT=false
+API_DEBUG=true
+API_VERSION=v1
+API_SUBTYPE=lumen
+```

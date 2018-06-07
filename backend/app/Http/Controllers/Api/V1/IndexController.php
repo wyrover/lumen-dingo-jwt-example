@@ -12,7 +12,10 @@ class IndexController extends Controller
 
     public function hello()
     {
-        return 'Hello World! V1';
+        return response()->json([
+            'message' => 'Hello World! V1',
+        ]);
+        //return 'Hello World! V1';
     }
     
 }

@@ -1,8 +1,14 @@
 <?php
+
 namespace App;
+
 use Illuminate\Database\Eloquent\Model;
+
 class Post extends Model
 {
+
+
+    protected $table = 'posts';
     /**
      * The attributes that are mass assignable.
      *
@@ -17,11 +23,10 @@ class Post extends Model
      * @var array
      */
     protected $hidden = [];
-    /**
-     * Get the user that owns the post.
-     */
-    public function post()
+    
+
+    public function tags()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTomany(Tag::class, 'post_tag');
     }
 }

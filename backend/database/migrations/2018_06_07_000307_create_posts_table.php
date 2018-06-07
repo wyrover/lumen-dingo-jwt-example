@@ -14,11 +14,31 @@ class CreatePostsTable extends Migration
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id');
+            $table->increments('id');            
             $table->string('subject');
             $table->string('body');
             $table->timestamps();
+        });
+
+        Schema::create('tags', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+        });
+
+        // 创建一个多对多的模型
+        Schema::create('post_tag', function (Blueprint $table) {
+            $table->unsignedInteger('tag_id');
+            $table->unsignedInteger('post_id');
+            $table->index('tag_id');
+            $table->index('post_id');
+            $table->foreign('tag_id', 'tag_post_foreign')
+                ->references('id')
+                ->on('tags')
+                ->onDelete('cascade');
+            $table->foreign('post_id', 'post_tag_foreign')
+                ->references('id')
+                ->on('posts')
+                ->onDelete('cascade');
         });
     }
 
@@ -29,6 +49,13 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
+        Schema::table('post_tag', function (Blueprint $table) {
+            $table->dropForeign('tag_post_foreign');
+            $table->dropForeign('post_tag_foreign');
+        });
+
+        Schema::dropIfExists('post_tag');
+        Schema::dropIfExists('tags');
         Schema::dropIfExists('posts');
     }
 }

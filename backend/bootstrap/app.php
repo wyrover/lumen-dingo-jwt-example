@@ -64,6 +64,7 @@ $app->singleton(
 // ]);
 
 $app->routeMiddleware([
+    'cors' => App\Http\Middleware\CorsMiddleware::class,
     'auth' => App\Http\Middleware\Authenticate::class,
 ]);
 
@@ -85,9 +86,8 @@ $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 
-$app->register(App\Providers\JWTAuthServiceProvider::class);
-
 // $app->register(App\Providers\AppServiceProvider::class);
+// 启用了 jwt 就不需要 AuthServiceProvider::class
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 

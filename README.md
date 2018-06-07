@@ -499,3 +499,54 @@ Article::where('status', 'unread')->update(['status' => 'read']);
 $article = Article::find($id);
 $article->delete();
 ```
+
+
+## ORM 映射
+
+- category 
+- feed
+- article
+
+
+一个 category 有多个 feed
+一个 feed 有多篇 article
+
+
+```
+
+class Category extends Model
+{
+    public function feeds()
+    {
+        return $this->hasMany('App\Feed')->orderBy('feed_name');
+    }
+}
+
+
+class Feed extends Model
+{
+    // 一个 feed 属于 category
+    public function category()
+    {
+        return this->belongsTo('App\Category');
+    }
+
+    public function articles()
+    {
+        return this->hasMany('App\Article');
+    }
+}
+
+
+class Article extends Model
+{
+    public function feed()
+    {
+        return $this->belongsTo('App\Feed');
+    }
+}
+
+
+
+
+```

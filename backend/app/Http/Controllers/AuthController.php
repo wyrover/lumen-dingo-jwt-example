@@ -6,6 +6,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\JWTAuth;
+use App\User;
 
 class AuthController extends Controller
 {
@@ -25,7 +26,8 @@ class AuthController extends Controller
         $this->validate($request, [
             'email'    => 'required|email|max:255',
             'password' => 'required',
-        ]);
+        ]);       
+
         try {
             if (! $token = $this->jwt->attempt($request->only('email', 'password'))) {
                 return response()->json(['user_not_found'], 404);
@@ -40,13 +42,71 @@ class AuthController extends Controller
         return response()->json(compact('token'));
     }
 
+    //第三方登录
+    public function login_thrid(Request $request)
+    {
+        $this->validate($request, [
+            'email'    => 'required|email|max:255',
+            'password' => 'required',
+        ]);
+
+        //Check is the email have registered
+        if (User::where('email', '=',  $request->input('email'))->exists()) {
+            $credentials = [
+                'email' => $request->input('email'),
+                'password' => $request->input('password'),
+                'confirm' => 1
+            ];
+        } else {
+            //Create the user first
+            $user = array(
+                'email'=> $request->input('email'),
+                'name'=>$request->input('name'),
+                'password'=> $request->input('password'),
+                'password_confirmation' => $request->input('password'),
+            );
+            $response = $this->api->post('register',$user);
+            //If success create user, create credentials
+            if($response['success']){
+                $credentials = [
+                    'email' => $request->input('email'),
+                    'password' => $request->input('password'),
+                    'confirm' => 1
+                ];
+            }
+        }
+
+        if (! $token = $this->jwt->attempt($credentials)) {
+            var_dump($token);
+            //return response()->json(['Maaf Anda tidak bisa login'], 404);
+        }
+
+        return response()->json(compact('token'));
+    }
+
+
+    // 退出登录
+    public function logout(Request $request)
+    {
+        if ($this->jwt->parseToken()->invalidate()) {
+            return response()->json(['logout' => 'Logout'], 200);
+        }
+
+        $token = $this->jwt->getToken();
+        $this->jwt->invalidate($token);
+        return response()->json(['logout' => 'Logout'], 200);
+    }
+
+
+
+
     // 注册用户
     public function createUser(Request $request) 
     {
         $this->validate($request, [
             'email'    => 'required|email|max:255|unique:users',
-            'password' => 'required',
-            'name'     => 'required'
+            'password' => 'required|min:6',
+            'name'     => 'required|min:4|max:255'
         ]);
 
         $data = $request->only('email', 'password', 'name');
@@ -56,7 +116,16 @@ class AuthController extends Controller
         $user->email    = $data['email'];
         $user->name     = $data['name'];
         $user->save();
-        return $user;
+
+        $token = $this->jwt->attempt($request->only('email', 'password'));
+
+
+        return response()->json([
+            'data' => $user,
+            'meta' => [
+                'token' => $token
+            ],
+        ], 200);
     }
 
     // 刷新 token

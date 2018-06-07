@@ -443,3 +443,59 @@ Bearer Token
     "total": 6
 }
 ```
+
+
+## 数据查询的方式
+
+ORM 映射后的查询
+
+``` php
+// 所有的分类按名字升序
+$categories = Category::orderBy('name', 'asc')->get();
+
+// 所有的 feed 按名字升序
+$feeds = Feed::orderBy('feed_name', 'asc')->get();
+
+
+$Articles = Article::where('status', 'unread')->orderBy('id', 'asc')->get();
+
+
+$Articles = Article::where('subject', 'like', '%'.$request->input('search').'%')->orWhere('content', 'like', '%'.$request->input('search').'%')->orderBy('published', Helper::setting('sort_order'))->select('id')->get();
+
+
+$Articles = DB::table('categories')->join('feeds', 'categories.id', '=', 'feeds.category_id')->join('articles', 'feeds.id', '=', 'articles.feed_id')->where('categories.id', $request->input('category_id'))->where('articles.status', $request->input('status'))->orderBy('published', Helper::setting('sort_order'))->select('articles.id')->get();
+
+```
+
+**新增数据，可以直接 create**
+
+``` php
+$article = Article::create($request->all());
+
+```
+
+
+
+
+**修改数据, 用 ORM 找到对象后，直接 save()，用于修改多个字段**
+
+``` php
+$article = Article::find($id);
+.....
+$article->save();
+```
+
+**还可以 where 查询后 update, 用户修改单个字段方便**
+
+``` php
+
+Article::where('status', 'unread')->update(['status' => 'read']);
+
+```
+
+**删除数据**
+
+```
+$article = Article::find($id);
+$article->delete();
+```

@@ -351,7 +351,30 @@ Bearer Token
 ```
 
 
-### 获取所有 task
+### 查单条 task
+
+GET http://localhost:8000/api/tasks/2
+
+Bearer Token
+
+返回
+
+```
+{
+    "task": {
+        "id": 2,
+        "title": "test11111111111111111",
+        "description": "hello world!!!!!!!!!!!!!!",
+        "completed": 0,
+        "user_id": 5,
+        "created_at": "2018-06-07 06:45:11",
+        "updated_at": "2018-06-07 07:40:30"
+    }
+}
+```
+
+
+### 查所有 task
 
 GET http://localhost:8000/api/tasks
 

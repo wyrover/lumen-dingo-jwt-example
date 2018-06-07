@@ -14,24 +14,25 @@
 $api = app('Dingo\Api\Routing\Router');
 
 
-// JWT µÇÂ¼
+// JWT ç™»å½•
 $api->version(['v1', 'v2'], ['namespace' => 'App\Http\Controllers'], function($api) {
     // http://localhost:8000/api/auth/login
     $api->post('/auth/login', 'AuthController@loginPost');
     $api->post('/auth/login/create', 'AuthController@loginPost');
+    $api->get('/auth/refresh', 'AuthController@refresh');
 });
 
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => 'api.throttle', 'limit' => 5, 'expires' => 1], function($api) {
 
 
-    // ²é
+    // æŸ¥
     $api->get('posts', ['as' => 'posts', 'uses' => 'PostController@index']);
 
     $api->get('posts/{id}', ['as' => 'post', 'uses' => 'PostController@show']);
 
     $api->get('posts/filter/{id}', ['as' => 'post', 'uses' => 'PostController@byTag']);
     
-    // ±» JWT ±£»¤µÄ API
+    // è¢« JWT ä¿æŠ¤çš„ API
     $api->group(['middleware' => ['cors', 'auth:api']], function ($api) {
 
         // http://localhost:8000/api/hello
@@ -39,10 +40,10 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' 
 
         
 
-        // Ôö
+        // å¢ž
         $api->post('posts/new', ['as' => 'postCreate', 'uses' => 'PostController@store']);
 
-        // ¸Ä
+        // æ”¹
         $api->post('posts/edit/{id}', ['as' => 'postUpdate', 'uses' => 'PostController@update']);
 
 

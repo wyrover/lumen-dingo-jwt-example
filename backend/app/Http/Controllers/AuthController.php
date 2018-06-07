@@ -19,6 +19,7 @@ class AuthController extends Controller
         $this->jwt = $jwt;
     }
 
+    // 登录 JWT 验证
     public function loginPost(Request $request)
     {
         $this->validate($request, [
@@ -39,7 +40,7 @@ class AuthController extends Controller
         return response()->json(compact('token'));
     }
 
-    // 创建用户
+    // 注册用户
     public function createUser(Request $request) 
     {
         $this->validate($request, [
@@ -56,6 +57,23 @@ class AuthController extends Controller
         $user->name     = $data['name'];
         $user->save();
         return $user;
+    }
+
+    // 刷新 token
+    public function refresh()
+    {
+        $token = $this->jwt->getToken();
+
+        if (!$token) {
+            throw new UnauthorizedHttpException('Token not provided');
+        }
+
+        try {
+            $token = $this->jwt->refresh();
+        } catch (TokenInvalidException $e) {
+            //throw new AccessDeniedHttpException('The token is invalid');
+        }
+        return response()->json(compact('token'));
     }
 
 }

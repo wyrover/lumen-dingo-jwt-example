@@ -217,13 +217,13 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
 
 ## Postman 测试
 
-登录 POST http://localhost:8000/api/auth/login
+**登录** POST http://localhost:8000/api/auth/login
 
 JSON(application/json)
 ``` json
 {
-	"email": "user1@example.com",
-	"password": "1234"
+    "email": "user1@example.com",
+    "password": "1234"
 }
 ```
 

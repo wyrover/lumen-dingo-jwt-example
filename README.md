@@ -503,6 +503,78 @@ $article->delete();
 
 ## ORM 映射
 
+- 一对一 `hasOne` 和 `belongsTo` 定义
+- 一对多 `hasMany` 和 `belongsTo` 定义
+- 多对多 `belongsToMany` 和 `belongsToMany` 定义
+
+
+** 多对多例子**
+
+表:
+
+- users
+- roles
+- role_user
+
+``` php
+class User extends Eloquent {
+
+    public function roles()
+    {
+        return $this->belongsToMany('Role', 'user_roles');
+    }
+
+}
+```
+或者定义，只定义其中一个就可以
+``` php
+class Role extends Eloquent {
+
+    public function users()
+    {
+        return $this->belongsToMany('User', 'user_roles');
+    }
+
+}
+```
+
+
+**多级查询**
+
+```
+countries
+    id - integer
+    name - string
+
+users
+    id - integer
+    country_id - integer
+    name - string
+
+posts
+    id - integer
+    user_id - integer
+    title - string
+```
+
+通过 country 来查 post, 特定国家下特定用户的 post
+
+``` php
+class Country extends Eloquent {
+
+    public function posts()
+    {
+        return $this->hasManyThrough('Post', 'User', 'country_id', 'user_id');
+    }
+
+}
+```
+
+
+
+**例子**
+
+
 - category 
 - feed
 - article
@@ -512,7 +584,7 @@ $article->delete();
 一个 feed 有多篇 article
 
 
-```
+``` php
 
 class Category extends Model
 {
@@ -550,3 +622,31 @@ class Article extends Model
 
 
 ```
+
+
+## ORM 综述
+
+1. 一个对象映射一个表，多个表之间通过 `belongsTo` 来指定父集，通过 `hasMany` 指定子集
+2. 查询所有记录，直接静态方法 `User::all()`
+3. 获取单条记录 `User::find(1)`
+4. 没有找到时抛出异常 `User::findOrFail(1) ` 或者 `User::where('votes', '>', 100)->firstOrFail()`, 可以在 `App::error` 级别捕获异常显示错误页面
+5. 查询多条记录 `$users = User::where('votes', '>', 100)->take(10)->get();`
+6. 统计 `$count = User::where('votes', '>', 100)->count();`
+7. whereRaw 语句 `$users = User::whereRaw('age > ? and votes = 100', array(25))->get();`
+8. 映射白名单 `$fillable` 和黑名单 `$guarded`，黑名单不允许赋值
+9. 阻止所有属性集体赋值 `protected $guarded = array('*');`
+10. 自增插入后获取插入id `$insertedId = $user->id;`
+11. 查询或创建 `$user = User::firstOrCreate(array('name' => 'John'));`
+12. 批量更新 `$affectedRows = User::where('votes', '>', 100)->update(array('status' => 2));`
+13. 根据主键删除，比先 find 再 delete 快，`User::destroy(1);`
+14. 只更新模型的时间戳 `$user->touch();`
+15. 软删除定义, 在模型中定义 `protected $softDelete = true;` ， 为表添加 `deleted_at` 字段，在迁移中可以使用 `$table->softDeletes();`
+16. 查询结果带软删除 `$users = User::withTrashed()->where('account_id', 1)->get();`
+17. 查询结果只包含软删除 `$users = User::onlyTrashed()->where('account_id', 1)->get();`
+18. 恢复软删除 `$user->restore();`
+19. 真正删除 `$user->forceDelete();`
+20. 判断是否软删除 `if ($user->trashed())`
+21. 如果不希望添加时间戳 `public $timestamps = false;`
+22. 为模型定义查询范围
+23. 使用查询范围 `$users = User::popular()->women()->orderBy('created_at')->get();`
+24. 多态关系定义，比如一个照片即属于 A 又属于 B

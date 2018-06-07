@@ -14,18 +14,20 @@
 $api = app('Dingo\Api\Routing\Router');
 
 
-// JWT 登录
+
 $api->version(['v1', 'v2'], ['namespace' => 'App\Http\Controllers'], function($api) {
-    // http://localhost:8000/api/auth/login
-    $api->post('/auth/login', ['as' => 'auth.login', 'uses' => 'AuthController@loginPost']);
-    $api->post('/auth/register', ['as' => 'auth.register', 'uses' => 'AuthController@createUser']);
-    $api->post('/auth/me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
-    $api->get('/auth/refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
-    $api->post('/auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
+    
+    
+    
+   
 });
 
-$api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => 'api.throttle', 'limit' => 5, 'expires' => 1], function($api) {
+$api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => ['api.throttle', 'cors'], 'limit' => 5, 'expires' => 1], function($api) {
 
+    // JWT 登录
+    // http://localhost:8000/api/auth/login
+    $api->post('/auth/login', ['as' => 'auth.login', 'uses' => 'AuthController@postLogin']);
+    $api->post('/auth/register', ['as' => 'auth.register', 'uses' => 'AuthController@postRegister']);
 
     // 查
     $api->get('posts', ['as' => 'posts', 'uses' => 'PostController@index']);
@@ -35,11 +37,18 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' 
     $api->get('posts/filter/{id}', ['as' => 'post', 'uses' => 'PostController@byTag']);
     
     // 被 JWT 保护的 API
-    $api->group(['middleware' => ['cors', 'auth:api']], function ($api) {
+    $api->group(['middleware' => 'auth:api'], function ($api) {
 
         // http://localhost:8000/api/hello
         $api->get('hello', 'IndexController@hello');
 
+        
+        $api->get('/auth/me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
+        $api->get('/auth/refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
+        $api->post('/auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
+
+
+        $api->post('tasks/new', ['as' => 'api.tasks.postCreate', 'uses' => 'TaskController@store']);
         
 
         // 增

@@ -273,3 +273,32 @@ Bearer Token
     }
 }
 ```
+
+
+### 添加 task
+
+POST http://localhost:8000/api/tasks/new
+
+Bearer Token
+
+``` js
+{
+    "title" : "test1",
+    "description" : "hello world!"
+}
+
+```
+
+返回
+``` js
+{
+    "task": {
+        "title": "test1",
+        "description": "hello world!",
+        "user_id": 5,
+        "updated_at": "2018-06-07 06:46:33",
+        "created_at": "2018-06-07 06:46:33",
+        "id": 4
+    }
+}
+```

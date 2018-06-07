@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -21,7 +21,7 @@ class AuthController extends Controller
     }
 
     // 登录 JWT 验证
-    public function loginPost(Request $request)
+    public function postLogin(Request $request)
     {
         $this->validate($request, [
             'email'    => 'required|email|max:255',
@@ -101,31 +101,36 @@ class AuthController extends Controller
 
 
     // 注册用户
-    public function createUser(Request $request) 
+    public function postRegister(Request $request) 
     {
         $this->validate($request, [
             'email'    => 'required|email|max:255|unique:users',
             'password' => 'required|min:6',
-            'name'     => 'required|min:4|max:255'
+            'passwordConfirmation' => 'required|same:password',
+            'name'     => 'required|min:4|max:255|unique:users'
         ]);
 
         $data = $request->only('email', 'password', 'name');
 
-        $user = new User();
-        $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
-        $user->email    = $data['email'];
-        $user->name     = $data['name'];
-        $user->save();
+        try {
+            $user = new User();
+            $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+            $user->email    = $data['email'];
+            $user->name     = $data['name'];
+            $user->save();
 
-        $token = $this->jwt->attempt($request->only('email', 'password'));
+            $token = $this->jwt->attempt($request->only('email', 'password'));
 
 
-        return response()->json([
-            'data' => $user,
-            'meta' => [
-                'token' => $token
-            ],
-        ], 200);
+            return response()->json([
+                'data' => $user,
+                'meta' => [
+                    'token' => $token
+                ],
+            ], 200);
+        } catch (Exception $e) {
+            return $this->jsonError('user_register_failed');
+        }
     }
 
     // 刷新 token
@@ -143,6 +148,14 @@ class AuthController extends Controller
             //throw new AccessDeniedHttpException('The token is invalid');
         }
         return response()->json(compact('token'));
+    }
+
+
+    public function me(Request $request)
+    {
+        return response()->json([
+            'data' => $request->user(),
+        ]);
     }
 
 }

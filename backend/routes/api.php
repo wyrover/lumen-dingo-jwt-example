@@ -22,12 +22,13 @@ $api->version(['v1', 'v2'], ['namespace' => 'App\Http\Controllers'], function($a
    
 });
 
-$api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => ['api.throttle', 'cors'], 'limit' => 5, 'expires' => 1], function($api) {
+$api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => ['api.throttle', 'cors'], 'limit' => 100, 'expires' => 1], function($api) {
 
     // JWT 登录
     // http://localhost:8000/api/auth/login
-    $api->post('/auth/login', ['as' => 'auth.login', 'uses' => 'AuthController@postLogin']);
-    $api->post('/auth/register', ['as' => 'auth.register', 'uses' => 'AuthController@postRegister']);
+    $api->post('auth/login', ['as' => 'auth.login', 'uses' => 'AuthController@postLogin']);
+    $api->post('auth/register', ['as' => 'auth.register', 'uses' => 'AuthController@postRegister']);
+    $api->post('auth/reset-password', ['as' => 'auth.reset-password', 'uses' => 'AuthController@postResetPassword']);
 
     // 查
     $api->get('posts', ['as' => 'posts', 'uses' => 'PostController@index']);
@@ -43,13 +44,28 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' 
         $api->get('hello', 'IndexController@hello');
 
         
-        $api->get('/auth/me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
-        $api->get('/auth/refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
-        $api->post('/auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
+        $api->get('auth/me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
+        $api->get('auth/refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
+        $api->post('auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
 
 
-        $api->post('tasks/new', ['as' => 'api.tasks.postCreate', 'uses' => 'TaskController@store']);
+        // 增
+        $api->post('tasks/new', ['as' => 'api.tasks.store', 'uses' => 'TaskController@store']);
+
+        // 删
+        $api->delete('tasks/{id}', ['as' => 'api.tasks.destroy', 'uses' => 'TaskController@destroy']);
+
+        // 改
+        $api->put('tasks/{id}', ['as' => 'api.tasks.update', 'uses' => 'TaskController@update']);
+
+
+        // 查
+        $api->get('tasks/{id}', ['as' => 'api.tasks.show', 'uses' => 'TaskController@show']);
+        $api->get('tasks', ['as' => 'api.tasks.index', 'uses' => 'TaskController@index']);
         
+        
+
+
 
         // 增
         $api->post('posts/new', ['as' => 'postCreate', 'uses' => 'PostController@store']);

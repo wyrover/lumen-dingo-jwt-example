@@ -302,3 +302,121 @@ Bearer Token
     }
 }
 ```
+
+
+### 删除 task
+
+DELETE http://localhost:8000/api/tasks/1
+
+Bearer Token
+
+返回
+``` js
+{
+    "id": 1,
+    "title": "test1",
+    "description": "hello world!",
+    "completed": 0,
+    "user_id": 5,
+    "created_at": "2018-06-07 06:42:48",
+    "updated_at": "2018-06-07 06:42:48"
+}
+```
+
+
+### 修改 task
+
+PUT http://localhost:8000/api/tasks/2
+
+Bearer Token
+
+``` js
+{
+    "title" : "test11111111111111111",
+    "description" : "hello world!!!!!!!!!!!!!!"
+}
+```
+
+返回
+``` js
+{
+    "id": 2,
+    "title": "test11111111111111111",
+    "description": "hello world!!!!!!!!!!!!!!",
+    "completed": 0,
+    "user_id": 5,
+    "created_at": "2018-06-07 06:45:11",
+    "updated_at": "2018-06-07 07:40:30"
+}
+```
+
+
+### 获取所有 task
+
+GET http://localhost:8000/api/tasks
+
+Bearer Token
+
+返回
+``` js
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 6,
+            "title": "test1",
+            "description": "hello world!",
+            "completed": 0,
+            "user_id": 5,
+            "created_at": "2018-06-07 07:21:30",
+            "updated_at": "2018-06-07 07:21:30"
+        },
+        {
+            "id": 5,
+            "title": "test1",
+            "description": "hello world!",
+            "completed": 0,
+            "user_id": 5,
+            "created_at": "2018-06-07 07:03:52",
+            "updated_at": "2018-06-07 07:03:52"
+        },
+        {
+            "id": 4,
+            "title": "test1",
+            "description": "hello world!",
+            "completed": 0,
+            "user_id": 5,
+            "created_at": "2018-06-07 06:46:33",
+            "updated_at": "2018-06-07 06:46:33"
+        },
+        {
+            "id": 3,
+            "title": "test1",
+            "description": "hello world!",
+            "completed": 0,
+            "user_id": 5,
+            "created_at": "2018-06-07 06:46:21",
+            "updated_at": "2018-06-07 06:46:21"
+        },
+        {
+            "id": 2,
+            "title": "test1",
+            "description": "hello world!",
+            "completed": 0,
+            "user_id": 5,
+            "created_at": "2018-06-07 06:45:11",
+            "updated_at": "2018-06-07 06:45:11"
+        }
+    ],
+    "first_page_url": "http://localhost:8000/api/tasks?page=1",
+    "from": 1,
+    "last_page": 2,
+    "last_page_url": "http://localhost:8000/api/tasks?page=2",
+    "next_page_url": "http://localhost:8000/api/tasks?page=2",
+    "path": "http://localhost:8000/api/tasks",
+    "per_page": 5,
+    "prev_page_url": null,
+    "to": 5,
+    "total": 6
+}
+```

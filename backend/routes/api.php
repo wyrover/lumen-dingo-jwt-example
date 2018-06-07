@@ -94,8 +94,38 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' 
             $api->get('/', ['as' => 'api.tasks.index', 'uses' => 'TaskController@index']);
         });
 
+
+
+        $api->group(['prefix' => 'articles'], function($api) {
+            // 增
+            $api->post('new', ['as' => 'api.articles.store', 'uses' => 'ArticleController@store']);
+
+            // 删
+            $api->delete('{id}', ['as' => 'api.articles.destroy', 'uses' => 'ArticleController@destroy']);
+
+            // 改
+            $api->put('{id}', ['as' => 'api.articles.update', 'uses' => 'ArticleController@update']);
+
+
+            // 查
+            $api->get('feed', ['as' => 'api.articles.feed', 'uses' => 'ArticleController@feed']);
+            $api->get('{slug:[a-z-]+}', ['as' => 'api.articles.show', 'uses' => 'ArticleController@show']);
+            $api->get('/', ['as' => 'api.articles.index', 'uses' => 'ArticleController@index']);
+
+
+            // Comments
+            $api->post('{slug:[a-z-]+}/comments', 'CommentController@store');
+            $api->get('{slug:[a-z-]+}/comments', 'CommentController@index');
+            $api->delete('{slug:[a-z-]+}/comments/{id:[a-z0-9]+}', 'CommentController@destroy');
+
+            // Favorites
+            $api->post('{slug:[a-z-]+}/favorite', 'ArticleController@addFavorite');
+            $api->delete('{slug:[a-z-]+}/favorite', 'ArticleController@addFavorite');
+        });
         
         
+        // Tags
+        //$api->get('tags', 'ArticleController@tags');
         
 
 

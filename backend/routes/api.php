@@ -24,18 +24,44 @@ $api->version(['v1', 'v2'], ['namespace' => 'App\Http\Controllers'], function($a
 
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' => ['api.throttle', 'cors'], 'limit' => 100, 'expires' => 1], function($api) {
 
-    // JWT 登录
-    // http://localhost:8000/api/auth/login
-    $api->post('auth/login', ['as' => 'auth.login', 'uses' => 'AuthController@postLogin']);
-    $api->post('auth/register', ['as' => 'auth.register', 'uses' => 'AuthController@postRegister']);
-    $api->post('auth/reset-password', ['as' => 'auth.reset-password', 'uses' => 'AuthController@postResetPassword']);
+    
 
-    // 查
-    $api->get('posts', ['as' => 'posts', 'uses' => 'PostController@index']);
 
-    $api->get('posts/{id}', ['as' => 'post', 'uses' => 'PostController@show']);
+    $api->group(['prefix' => 'auth'], function($api) {
+        // JWT 登录
+        // http://localhost:8000/api/auth/login
+        $api->post('login', ['as' => 'auth.login', 'uses' => 'AuthController@postLogin']);
+        $api->post('register', ['as' => 'auth.register', 'uses' => 'AuthController@postRegister']);
+        
+    });
 
-    $api->get('posts/filter/{id}', ['as' => 'post', 'uses' => 'PostController@byTag']);
+    
+
+    $api->group(['prefix' => 'profiles/{username}'], function($api) {
+        $api->get('/', 'ProfileController@show');
+        $api->post('follow', 'ProfileController@follow');
+        $api->delete('follow', 'ProfileController@follow');
+    });
+
+    $api->group(['prefix' => 'link'], function($api) {
+        $api->get('{code_id}', 'LinkController@show');
+        $api->get('stats/{code_id}', 'LinkController@show2');
+        $api->post('/', 'LinkController@store');
+    });
+
+
+    $api->group(['prefix' => 'posts'], function($api) {
+        // 查
+        $api->get('/', ['as' => 'posts', 'uses' => 'PostController@index']);
+
+        $api->get('{id}', ['as' => 'post', 'uses' => 'PostController@show']);
+
+        $api->get('filter/{id}', ['as' => 'post.filter', 'uses' => 'PostController@byTag']);
+    });
+
+    
+
+  
     
     // 被 JWT 保护的 API
     $api->group(['middleware' => 'auth:api'], function ($api) {
@@ -43,25 +69,32 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1', 'middleware' 
         // http://localhost:8000/api/hello
         $api->get('hello', 'IndexController@hello');
 
+        $api->group(['prefix' => 'auth'], function($api) {
+            $api->post('reset-password', ['as' => 'auth.reset-password', 'uses' => 'AuthController@postResetPassword']);
+            $api->get('me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
+            $api->get('refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
+            $api->post('logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
+        });
+
         
-        $api->get('auth/me', ['as' => 'auth.me', 'uses' => 'AuthController@me']);
-        $api->get('auth/refresh', ['as' => 'auth.refresh', 'uses' => 'AuthController@refresh']);
-        $api->post('auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
+        
+        $api->group(['prefix' => 'tasks'], function($api) {
+            // 增
+            $api->post('new', ['as' => 'api.tasks.store', 'uses' => 'TaskController@store']);
+
+            // 删
+            $api->delete('{id}', ['as' => 'api.tasks.destroy', 'uses' => 'TaskController@destroy']);
+
+            // 改
+            $api->put('{id}', ['as' => 'api.tasks.update', 'uses' => 'TaskController@update']);
 
 
-        // 增
-        $api->post('tasks/new', ['as' => 'api.tasks.store', 'uses' => 'TaskController@store']);
+            // 查
+            $api->get('{id}', ['as' => 'api.tasks.show', 'uses' => 'TaskController@show']);
+            $api->get('/', ['as' => 'api.tasks.index', 'uses' => 'TaskController@index']);
+        });
 
-        // 删
-        $api->delete('tasks/{id}', ['as' => 'api.tasks.destroy', 'uses' => 'TaskController@destroy']);
-
-        // 改
-        $api->put('tasks/{id}', ['as' => 'api.tasks.update', 'uses' => 'TaskController@update']);
-
-
-        // 查
-        $api->get('tasks/{id}', ['as' => 'api.tasks.show', 'uses' => 'TaskController@show']);
-        $api->get('tasks', ['as' => 'api.tasks.index', 'uses' => 'TaskController@index']);
+        
         
         
 

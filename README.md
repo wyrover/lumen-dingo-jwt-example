@@ -650,3 +650,9 @@ class Article extends Model
 22. 为模型定义查询范围
 23. 使用查询范围 `$users = User::popular()->women()->orderBy('created_at')->get();`
 24. 多态关系定义，比如一个照片即属于 A 又属于 B
+
+
+
+## 使用缓存
+
+Cache::remember

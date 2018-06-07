@@ -245,3 +245,31 @@ JSON(application/json)
     "password": "123456"
 }
 ```
+
+
+### 登录后用户信息
+
+POST http://localhost:8000/api/auth/me
+
+Bearer Token
+
+返回
+
+``` javascript
+{
+    "data": {
+        "id": 1,
+        "name": "Shaina Carroll",
+        "email": "user1@example.com",
+        "realname": "",
+        "birthday": "",
+        "phone": "",
+        "address": "",
+        "city": "",
+        "province": "",
+        "country": "",
+        "created_at": "2018-06-07 02:57:09",
+        "updated_at": "2018-06-07 02:57:09"
+    }
+}
+```

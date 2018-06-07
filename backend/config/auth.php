@@ -36,7 +36,10 @@ return [
     */
  
     'guards' => [
-        'api' => ['driver' => 'jwt', 'provider' => 'users'],
+        'api' => [
+            'driver' => 'jwt', 
+            'provider' => 'users',
+        ],
  
     ],
  
@@ -84,7 +87,11 @@ return [
     */
  
     'passwords' => [
-        //
+        'users' => [
+            'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 3660,
+        ],
     ],
  
 ];

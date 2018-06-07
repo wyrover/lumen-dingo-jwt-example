@@ -11,6 +11,23 @@
 |
 */
 
-//$router->get('/', function () use ($router) {
-//    return $router->app->version();
-//});
+$api = app('Dingo\Api\Routing\Router');
+
+
+$api->version(['v1', 'v2'], ['namespace' => 'App\Http\Controllers'], function($api) {
+    $api->post('/auth/login', 'AuthController@loginPost');
+});
+
+$api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1'], function($api) {
+    //Show all available resources
+    $api->get('hello', 'IndexController@hello');
+
+    $api->get('posts', 'PostController@index');
+    
+});
+
+$api->version('v2', ['namespace' => 'App\Http\Controllers\Api\V2'], function($api) {
+    //Show all available resources
+    $api->get('hello', 'IndexController@hello');
+    
+});

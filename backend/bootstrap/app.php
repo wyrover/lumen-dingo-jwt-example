@@ -63,9 +63,9 @@ $app->singleton(
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +83,9 @@ $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 
 // jwt
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+
+
+$app->register(App\Providers\JWTAuthServiceProvider::class);
 
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
